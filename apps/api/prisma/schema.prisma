@@ -12,11 +12,41 @@ datasource db {
     provider = "postgresql"
 }
 
+enum ProjectRole {
+    OWNER
+    ADMIN
+    MEMBER
+}
+
 model User {
-    id         Int      @id @default(autoincrement())
-    name       String
-    email      String   @unique
-    password   String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id                 Int             @id @default(autoincrement())
+    name               String
+    email              String          @unique
+    password           String
+    createdAt          DateTime        @default(now())
+    updatedAt          DateTime        @updatedAt
+    projectMemberships ProjectMember[]
+}
+
+model Project {
+    id          Int      @id @default(autoincrement())
+    name        String
+    description String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    members ProjectMember[]
+}
+
+model ProjectMember {
+    userId    Int
+    projectId Int
+    role      ProjectRole @default(MEMBER)
+    joinedAt  DateTime    @default(now())
+
+    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+    @@id([userId, projectId])
+    @@index([projectId])
 }
