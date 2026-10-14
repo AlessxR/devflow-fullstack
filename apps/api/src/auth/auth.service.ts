@@ -18,4 +18,8 @@ export class AuthService {
       accessToken,
     };
   }
+
+  async getMe(userId: number) {
+    return this.users.findById(userId);
+  }
 }
