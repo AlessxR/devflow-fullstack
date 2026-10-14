@@ -44,4 +44,17 @@ export class AuthController {
   me(@Req() request: AuthenticatedRequest) {
     return this.auth.getMe(request.user.sub);
   }
+
+  @Post('logout')
+  async logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('access_token', {
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    });
+
+    return {
+      message: 'Logout successful',
+    };
+  }
 }
