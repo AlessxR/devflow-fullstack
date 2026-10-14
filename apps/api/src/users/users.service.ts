@@ -1,7 +1,12 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto.js';
+import { LoginDto } from './dto/login.dto.js';
 
 @Injectable()
 export class UsersService {
@@ -27,6 +32,23 @@ export class UsersService {
     });
 
     const { password: _, ...safeUser } = createdUser;
+
+    return safeUser;
+  }
+
+  async login({ email, password }: LoginDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) throw new UnauthorizedException('Invalid email or password');
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid)
+      throw new UnauthorizedException('Invalid email or password');
+
+    const { password: _, ...safeUser } = user;
 
     return safeUser;
   }
