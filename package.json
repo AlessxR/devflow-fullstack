@@ -1,0 +1,19 @@
+{
+    "name": "devflow-fullstack",
+    "version": "1.0.0",
+    "private": false,
+    "workspaces": [
+        "apps/web",
+        "apps/api"
+    ],
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev:web": "npm run dev --workspace=apps/web",
+        "dev:api": "npm run start:dev --workspace=apps/api",
+        "build:web": "npm run build --workspace=apps/web"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": ""
+}
