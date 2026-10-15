@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -49,8 +50,22 @@ export class ProjectsController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  async update(@Param('id', ParseIntPipe) projectId: number, @Body() dto: UpdateProjectDto, @Req() request: AuthenticatedRequest) {
+  async update(
+    @Param('id', ParseIntPipe) projectId: number,
+    @Body() dto: UpdateProjectDto,
+    @Req() request: AuthenticatedRequest,
+  ) {
     const userId = request.user.sub;
     return this.projects.update(projectId, userId, dto);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  async delete(
+    @Param('id', ParseIntPipe) projectId: number,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    const userId = request.user.sub;
+    return this.projects.remove(projectId, userId);
   }
 }

@@ -90,15 +90,23 @@ export class ProjectsService {
     await this.assertCanManageProject(projectId, userId);
 
     return await this.prisma.project.update({
-        data: {
-            name: dto.name,
-            description: dto.description,
-        },
-        where: {
-            id: projectId,
-        }
+      data: {
+        name: dto.name,
+        description: dto.description,
+      },
+      where: {
+        id: projectId,
+      },
     });
+  }
 
+  async remove(projectId: number, userId: number) {
+    await this.assertCanManageProject(projectId, userId);
 
+    return await this.prisma.project.delete({
+      where: {
+        id: projectId,
+      },
+    });
   }
 }
