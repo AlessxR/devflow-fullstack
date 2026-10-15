@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth/jwt-auth.guard.js';
 
@@ -17,5 +17,12 @@ export class ProjectsController {
   ) {
     const userId = request.user.sub;
     return this.projects.create(dto, userId);
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async get(@Req() request: AuthenticatedRequest) {
+    const userId = request.user.sub;
+    return this.projects.findAll(userId);
   }
 }

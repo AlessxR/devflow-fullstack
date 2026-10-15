@@ -25,4 +25,16 @@ export class ProjectsService {
       },
     });
   }
+
+  findAll(userId: number) {
+    return this.prisma.project.findMany({
+        where: {
+            members: {
+                some: {
+                    userId
+                }
+            }
+        }
+    })
+  }
 }
