@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   ParseIntPipe,
   Post,
@@ -26,5 +27,14 @@ export class TasksController {
     @Body() dto: CreateTaskDto,
   ) {
     return this.tasks.create(projectId, dto, request.user.sub);
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async getTasks(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    return this.tasks.findAll(projectId, request.user.sub);
   }
 }
