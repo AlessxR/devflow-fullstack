@@ -37,4 +37,14 @@ export class TasksController {
   ) {
     return this.tasks.findAll(projectId, request.user.sub);
   }
+
+  @Get(':taskId')
+  @UseGuards(JwtAuthGuard)
+  getTask(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Param('taskId', ParseIntPipe) taskId: number,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    return this.tasks.findOne(projectId, taskId, request.user.sub);
+  }
 }
