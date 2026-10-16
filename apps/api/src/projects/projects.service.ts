@@ -109,4 +109,25 @@ export class ProjectsService {
       },
     });
   }
+
+  async findMembers(projectId: number, userId: number) {
+    await this.findOne(projectId, userId);
+
+    const users = await this.prisma.projectMember.findMany({
+      where: {
+        projectId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return users;
+  }
 }

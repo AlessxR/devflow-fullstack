@@ -65,7 +65,15 @@ export class ProjectsController {
     @Param('id', ParseIntPipe) projectId: number,
     @Req() request: AuthenticatedRequest,
   ) {
-    const userId = request.user.sub;
-    return this.projects.remove(projectId, userId);
+    return this.projects.remove(projectId, request.user.sub);
+  }
+
+  @Get(':id/members')
+  @UseGuards(JwtAuthGuard)
+  async getMembers(
+    @Param('id', ParseIntPipe) projectId: number,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    return this.projects.findMembers(projectId, request.user.sub);
   }
 }
