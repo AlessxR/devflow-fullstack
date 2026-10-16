@@ -47,6 +47,15 @@ export class TasksService {
       where: {
         projectId,
       },
+      include: {
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
     });
   }
 
@@ -57,6 +66,15 @@ export class TasksService {
       where: {
         id: taskId,
         projectId,
+      },
+      include: {
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
@@ -81,6 +99,15 @@ export class TasksService {
         title: dto.title,
         description: dto.description,
         status: dto.status,
+      },
+      include: {
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
   }
