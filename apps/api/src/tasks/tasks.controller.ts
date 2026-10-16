@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -14,6 +15,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth/jwt-auth.guard.js';
 import type { AuthenticatedRequest } from '../auth/guards/jwt-auth/jwt-auth.guard.js';
 
 import { CreateTaskDto } from './dto/create-task.dto.js';
+import { UpdateTaskDto } from './dto/update-task.dto.js';
 
 @Controller('projects/:projectId/tasks')
 export class TasksController {
@@ -46,5 +48,16 @@ export class TasksController {
     @Req() request: AuthenticatedRequest,
   ) {
     return this.tasks.findOne(projectId, taskId, request.user.sub);
+  }
+
+  @Patch(':taskId')
+  @UseGuards(JwtAuthGuard)
+  updateTask(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Param('taskId', ParseIntPipe) taskId: number,
+    @Req() request: AuthenticatedRequest,
+    @Body() dto: UpdateTaskDto,
+  ) {
+    return this.tasks.update(projectId, taskId, dto, request.user.sub);
   }
 }
