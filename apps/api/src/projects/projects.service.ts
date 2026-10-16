@@ -1,4 +1,5 @@
 import {
+    ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -7,6 +8,7 @@ import { CreateProjectDto } from './dto/create-project.dto.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ProjectRole } from '../generated/prisma/enums.js';
 import { UpdateProjectDto } from './dto/update-project.dto.js';
+import { AddProjectMemberDto } from './dto/add-project-member.dto.js';
 
 @Injectable()
 export class ProjectsService {
@@ -129,5 +131,36 @@ export class ProjectsService {
     });
 
     return users;
+  }
+
+  async addMember(projectId: number, userId: number, dto: AddProjectMemberDto) {
+    await this.assertCanManageProject(projectId, userId);
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: dto.email,
+      },
+    });
+
+    if (!user) throw new NotFoundException('User not found.');
+
+    const isMember = await this.prisma.projectMember.findUnique({
+      where: {
+        userId_projectId: {
+          userId: user.id,
+          projectId: projectId
+        },
+      },
+    });
+
+    if (isMember) throw new ConflictException('User in this project.');
+
+    return this.prisma.projectMember.create({
+        data: {
+            userId: user.id,
+            projectId,
+            role: ProjectRole.MEMBER
+        }
+    })
   }
 }

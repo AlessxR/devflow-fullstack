@@ -16,6 +16,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth/jwt-auth.guard.js';
 import type { AuthenticatedRequest } from '../auth/guards/jwt-auth/jwt-auth.guard.js';
 import { ProjectsService } from './projects.service.js';
 import { UpdateProjectDto } from './dto/update-project.dto.js';
+import { AddProjectMemberDto } from './dto/add-project-member.dto.js';
 
 @Controller('projects')
 export class ProjectsController {
@@ -75,5 +76,15 @@ export class ProjectsController {
     @Req() request: AuthenticatedRequest,
   ) {
     return this.projects.findMembers(projectId, request.user.sub);
+  }
+
+  @Post(':id/members')
+  @UseGuards(JwtAuthGuard)
+  addMember(
+    @Param('id', ParseIntPipe) projectId: number,
+    @Body() dto: AddProjectMemberDto,
+    @Req() request: AuthenticatedRequest
+  ) {
+    return this.projects.addMember(projectId, request.user.sub, dto);
   }
 }
