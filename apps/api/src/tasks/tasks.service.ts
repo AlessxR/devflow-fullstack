@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -6,6 +7,7 @@ import {
 import { CreateTaskDto } from './dto/create-task.dto.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { UpdateTaskDto } from './dto/update-task.dto.js';
+import { AssignTaskDto } from './dto/assign-task.dto.js';
 
 @Injectable()
 export class TasksService {
@@ -89,6 +91,39 @@ export class TasksService {
     return this.prisma.task.delete({
       where: {
         id: taskId,
+      },
+    });
+  }
+
+  async assign(
+    projectId: number,
+    taskId: number,
+    userId: number,
+    dto: AssignTaskDto,
+  ) {
+    await this.assertProjectMember(projectId, userId);
+    await this.findOne(projectId, taskId, userId);
+    const assigneMember = await this.prisma.projectMember.findUnique({
+      where: {
+        userId_projectId: {
+          userId: dto.assigneeId,
+          projectId,
+        },
+      },
+    });
+
+    if (!assigneMember) {
+      throw new BadRequestException(
+        'Assignee must be a member of the project.',
+      );
+    }
+
+    return this.prisma.task.update({
+      where: {
+        id: taskId,
+      },
+      data: {
+        assigneeId: dto.assigneeId,
       },
     });
   }

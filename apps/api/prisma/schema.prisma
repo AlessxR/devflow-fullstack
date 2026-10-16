@@ -32,6 +32,7 @@ model User {
     createdAt          DateTime        @default(now())
     updatedAt          DateTime        @updatedAt
     projectMemberships ProjectMember[]
+    assignedTasks Task[]
 }
 
 model Project {
@@ -66,4 +67,6 @@ model Task {
     updatedAt   DateTime   @updatedAt
     projectId   Int
     project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    assignedId Int?
+    assignee User? @relation(fields: [assignedId], references: [id], onDelete: SetNull)
 }

@@ -17,6 +17,7 @@ import type { AuthenticatedRequest } from '../auth/guards/jwt-auth/jwt-auth.guar
 
 import { CreateTaskDto } from './dto/create-task.dto.js';
 import { UpdateTaskDto } from './dto/update-task.dto.js';
+import { AssignTaskDto } from './dto/assign-task.dto.js';
 
 @Controller('projects/:projectId/tasks')
 export class TasksController {
@@ -70,5 +71,16 @@ export class TasksController {
     @Req() request: AuthenticatedRequest,
   ) {
     return this.tasks.remove(projectId, taskId, request.user.sub);
+  }
+
+  @Patch(':taskId/assignee')
+  @UseGuards(JwtAuthGuard)
+  assignTask(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Param('taskId', ParseIntPipe) taskId: number,
+    @Req() request: AuthenticatedRequest,
+    @Body() dto: AssignTaskDto,
+  ) {
+    return this.tasks.assign(projectId, taskId, request.user.sub, dto);
   }
 }
