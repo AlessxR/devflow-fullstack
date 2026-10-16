@@ -82,4 +82,14 @@ export class TasksService {
       },
     });
   }
+
+  async remove(projectId: number, taskId: number, userId: number) {
+    await this.findOne(projectId, taskId, userId);
+
+    return this.prisma.task.delete({
+      where: {
+        id: taskId,
+      },
+    });
+  }
 }

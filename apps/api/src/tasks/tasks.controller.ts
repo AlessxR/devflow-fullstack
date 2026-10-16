@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -59,5 +60,15 @@ export class TasksController {
     @Body() dto: UpdateTaskDto,
   ) {
     return this.tasks.update(projectId, taskId, dto, request.user.sub);
+  }
+
+  @Delete(':taskId')
+  @UseGuards(JwtAuthGuard)
+  removeTask(
+    @Param('projectId', ParseIntPipe) projectId: number,
+    @Param('taskId', ParseIntPipe) taskId: number,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    return this.tasks.remove(projectId, taskId, request.user.sub);
   }
 }
