@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -18,6 +19,7 @@ import type { AuthenticatedRequest } from '../auth/guards/jwt-auth/jwt-auth.guar
 import { CreateTaskDto } from './dto/create-task.dto.js';
 import { UpdateTaskDto } from './dto/update-task.dto.js';
 import { AssignTaskDto } from './dto/assign-task.dto.js';
+import { FilterTaskDto } from './dto/filter-task.dto.js';
 
 @Controller('projects/:projectId/tasks')
 export class TasksController {
@@ -38,8 +40,9 @@ export class TasksController {
   async getTasks(
     @Param('projectId', ParseIntPipe) projectId: number,
     @Req() request: AuthenticatedRequest,
+    @Query() filters: FilterTaskDto,
   ) {
-    return this.tasks.findAll(projectId, request.user.sub);
+    return this.tasks.findAll(projectId, request.user.sub, filters);
   }
 
   @Get(':taskId')
@@ -83,4 +86,6 @@ export class TasksController {
   ) {
     return this.tasks.assign(projectId, taskId, request.user.sub, dto);
   }
+
+
 }

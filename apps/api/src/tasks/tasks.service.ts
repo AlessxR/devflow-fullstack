@@ -8,6 +8,7 @@ import { CreateTaskDto } from './dto/create-task.dto.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { UpdateTaskDto } from './dto/update-task.dto.js';
 import { AssignTaskDto } from './dto/assign-task.dto.js';
+import { FilterTaskDto } from './dto/filter-task.dto.js';
 
 @Injectable()
 export class TasksService {
@@ -40,12 +41,13 @@ export class TasksService {
     });
   }
 
-  async findAll(projectId: number, userId: number) {
+  async findAll(projectId: number, userId: number, filters: FilterTaskDto) {
     await this.assertProjectMember(projectId, userId);
 
     return await this.prisma.task.findMany({
       where: {
         projectId,
+        ...(filters.status && { status: filters.status }),
       },
       include: {
         assignee: {
