@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { ProjectRole } from '../generated/prisma/enums.js';
 import { UpdateProjectDto } from './dto/update-project.dto.js';
 import { AddProjectMemberDto } from './dto/add-project-member.dto.js';
+import { UpdateProjectMemberRoleDto } from './dto/update-project-member-role.dto.js';
 
 @Injectable()
 export class ProjectsService {
@@ -187,6 +188,40 @@ export class ProjectsService {
           projectId,
         },
       },
+    });
+  }
+
+  async updateMemberRole(
+    projectId: number,
+    userId: number,
+    memberId: number,
+    dto: UpdateProjectMemberRoleDto,
+  ) {
+    await this.assertCanManageProject(projectId, userId);
+
+    const member = await this.prisma.projectMember.findUnique({
+      where: {
+        userId_projectId: {
+          userId: memberId,
+          projectId,
+        },
+      },
+    });
+
+    if (!member) throw new NotFoundException();
+
+    if (member.role === ProjectRole.OWNER) throw new ForbiddenException();
+
+    return this.prisma.projectMember.update({
+        where: {
+            userId_projectId: {
+                userId: memberId,
+                projectId,
+            }
+        },
+        data: {
+            role: dto.role
+        }
     });
   }
 }

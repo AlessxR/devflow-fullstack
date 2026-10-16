@@ -17,6 +17,7 @@ import type { AuthenticatedRequest } from '../auth/guards/jwt-auth/jwt-auth.guar
 import { ProjectsService } from './projects.service.js';
 import { UpdateProjectDto } from './dto/update-project.dto.js';
 import { AddProjectMemberDto } from './dto/add-project-member.dto.js';
+import { UpdateProjectMemberRoleDto } from './dto/update-project-member-role.dto.js';
 
 @Controller('projects')
 export class ProjectsController {
@@ -96,5 +97,21 @@ export class ProjectsController {
     @Req() request: AuthenticatedRequest,
   ) {
     return this.projects.removeMember(projectId, memberId, request.user.sub);
+  }
+
+  @Patch(':id/members/:memberId/role')
+  @UseGuards(JwtAuthGuard)
+  updateMemberRole(
+    @Param('id', ParseIntPipe) projectId: number,
+    @Req() request: AuthenticatedRequest,
+    @Param('memberId', ParseIntPipe) memberId: number,
+    @Body() dto: UpdateProjectMemberRoleDto,
+  ) {
+    return this.projects.updateMemberRole(
+      projectId,
+      request.user.sub,
+      memberId,
+      dto,
+    );
   }
 }
