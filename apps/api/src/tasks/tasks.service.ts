@@ -130,19 +130,21 @@ export class TasksService {
   ) {
     await this.assertProjectMember(projectId, userId);
     await this.findOne(projectId, taskId, userId);
-    const assigneMember = await this.prisma.projectMember.findUnique({
-      where: {
-        userId_projectId: {
-          userId: dto.assigneeId,
-          projectId,
+    if (dto.assigneeId !== null) {
+      const assigneeMember = await this.prisma.projectMember.findUnique({
+        where: {
+          userId_projectId: {
+            userId: dto.assigneeId,
+            projectId,
+          },
         },
-      },
-    });
+      });
 
-    if (!assigneMember) {
-      throw new BadRequestException(
-        'Assignee must be a member of the project.',
-      );
+      if (!assigneeMember) {
+        throw new BadRequestException(
+          'Assignee must be a member of the project.',
+        );
+      }
     }
 
     return this.prisma.task.update({
@@ -151,6 +153,15 @@ export class TasksService {
       },
       data: {
         assigneeId: dto.assigneeId,
+      },
+      include: {
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
   }

@@ -1,6 +1,8 @@
-import { IsInt } from 'class-validator';
+import { IsInt, IsOptional } from 'class-validator';
 
 export class AssignTaskDto {
   @IsInt()
-  assigneeId!: number;
+  @IsOptional()
+  assigneeId!: number | null;
+
 }
