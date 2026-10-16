@@ -1,5 +1,5 @@
 import {
-    ConflictException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -148,7 +148,7 @@ export class ProjectsService {
       where: {
         userId_projectId: {
           userId: user.id,
-          projectId: projectId
+          projectId: projectId,
         },
       },
     });
@@ -156,11 +156,37 @@ export class ProjectsService {
     if (isMember) throw new ConflictException('User in this project.');
 
     return this.prisma.projectMember.create({
-        data: {
-            userId: user.id,
-            projectId,
-            role: ProjectRole.MEMBER
-        }
-    })
+      data: {
+        userId: user.id,
+        projectId,
+        role: ProjectRole.MEMBER,
+      },
+    });
+  }
+
+  async removeMember(projectId: number, userId: number, memberId: number) {
+    await this.assertCanManageProject(projectId, userId);
+
+    const member = await this.prisma.projectMember.findUnique({
+      where: {
+        userId_projectId: {
+          userId: memberId,
+          projectId,
+        },
+      },
+    });
+
+    if (!member) throw new NotFoundException('Member not found.');
+
+    if (member.role === ProjectRole.OWNER) throw new ForbiddenException();
+
+    return this.prisma.projectMember.delete({
+      where: {
+        userId_projectId: {
+          userId: memberId,
+          projectId,
+        },
+      },
+    });
   }
 }

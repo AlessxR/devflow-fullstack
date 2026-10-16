@@ -83,8 +83,18 @@ export class ProjectsController {
   addMember(
     @Param('id', ParseIntPipe) projectId: number,
     @Body() dto: AddProjectMemberDto,
-    @Req() request: AuthenticatedRequest
+    @Req() request: AuthenticatedRequest,
   ) {
     return this.projects.addMember(projectId, request.user.sub, dto);
+  }
+
+  @Delete(':id/members/:memberId')
+  @UseGuards(JwtAuthGuard)
+  deleteMember(
+    @Param('id', ParseIntPipe) projectId: number,
+    @Param('memberId', ParseIntPipe) memberId: number,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    return this.projects.removeMember(projectId, memberId, request.user.sub);
   }
 }
