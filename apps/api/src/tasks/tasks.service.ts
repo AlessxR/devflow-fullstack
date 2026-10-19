@@ -43,6 +43,8 @@ export class TasksService {
 
   async findAll(projectId: number, userId: number, filters: FilterTaskDto) {
     await this.assertProjectMember(projectId, userId);
+    const page = filters.page ?? 1;
+    const limit = filters.limit ?? 10;
 
     return await this.prisma.task.findMany({
       where: {
@@ -66,6 +68,8 @@ export class TasksService {
       orderBy: {
         [filters.sortBy ?? 'createdAt']: filters.order ?? 'desc',
       },
+      skip: (page - 1) * limit,
+      take: limit,
     });
   }
 

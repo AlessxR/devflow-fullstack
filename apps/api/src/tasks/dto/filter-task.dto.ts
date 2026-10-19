@@ -1,24 +1,35 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsIn, IsInt, IsOptional } from "class-validator";
-import { TaskStatus } from "../../generated/prisma/enums.js";
+import { IsEnum, IsIn, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { TaskStatus } from '../../generated/prisma/enums.js';
 
 export class FilterTaskDto {
-    @IsOptional()
-    @IsEnum(TaskStatus)
-    status?: TaskStatus
+  @IsOptional()
+  @IsEnum(TaskStatus)
+  status?: TaskStatus;
 
-    @IsInt()
-    @Type(() => Number)
-    @IsOptional()
-    assigneeId?: number;
+  @IsInt()
+  @Type(() => Number)
+  @IsOptional()
+  assigneeId?: number;
 
+  @IsOptional()
+  @IsIn(['createdAt', 'title'])
+  sortBy?: 'createdAt' | 'title';
 
-    @IsOptional()
-    @IsIn(['createdAt', 'title'])
-    sortBy?: 'createdAt' | 'title'
+  @IsOptional()
+  @IsIn(['asc', 'desc'])
+  order?: 'asc' | 'desc';
 
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  page: number = 1;
 
-    @IsOptional()
-    @IsIn(['asc', 'desc'])
-    order?: 'asc' | 'desc'
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  @IsOptional()
+  limit: number = 10;
 }
