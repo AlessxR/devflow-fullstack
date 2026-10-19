@@ -63,6 +63,9 @@ export class TasksService {
           },
         },
       },
+      orderBy: {
+        [filters.sortBy ?? 'createdAt']: filters.order ?? 'desc',
+      },
     });
   }
 
