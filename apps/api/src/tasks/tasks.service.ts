@@ -47,7 +47,12 @@ export class TasksService {
     return await this.prisma.task.findMany({
       where: {
         projectId,
-        ...(filters.status && { status: filters.status }),
+        ...(filters.status && {
+          status: filters.status,
+        }),
+        ...(filters.assigneeId !== undefined && {
+          assigneeId: filters.assigneeId,
+        }),
       },
       include: {
         assignee: {
